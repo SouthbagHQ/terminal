@@ -5,23 +5,24 @@ LDFLAGS ?=
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
-    LDFLAGS += -lutil
+    LDFLAGS += -lutil -lpthread
 endif
 
 ifeq ($(UNAME_S),Darwin)
-    # macOS has openpty in libc. nothing to link.
+    # macOS has openpty in libc. pthreads are also built in.
+    LDFLAGS += -lpthread
 endif
 
 ifeq ($(UNAME_S),FreeBSD)
-    LDFLAGS += -lutil
+    LDFLAGS += -lutil -lpthread
 endif
 
 ifeq ($(UNAME_S),OpenBSD)
-    LDFLAGS += -lutil
+    LDFLAGS += -lutil -lpthread
 endif
 
 ifeq ($(UNAME_S),NetBSD)
-    LDFLAGS += -lutil
+    LDFLAGS += -lutil -lpthread
 endif
 
 TARGET  = shitterm
