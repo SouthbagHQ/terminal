@@ -1,66 +1,87 @@
 # shitterm
 
-> The world's shittiest terminal emulator.
+> A paradigm-shifting, enterprise-grade terminal emulator from the [Southbag Global Enterprise Network](https://southbag.cc).
 
 [![Build](https://github.com/SouthbagHQ/terminal/actions/workflows/build.yml/badge.svg)](https://github.com/SouthbagHQ/terminal/actions/workflows/build.yml)
 
-## What is this?
+---
 
-It's a terminal emulator. Barely. It:
+## Overview
 
-- Opens a PTY
-- Forks your shell into it
-- Copies bytes back and forth
+**shitterm** is Southbag's official terminal emulator. It is fast, minimal, and compliant with Southbag's core security philosophy. All sessions are monitored by Kevin.
 
-That's it. No:
-- Scroll back
-- Tabs
-- Font selection
-- Config files
-- Window resizing (well, it tries, but no promises)
-- VT100 parsing (we pass escape codes through and hope your underlying terminal handles them, which it won't because we ARE the terminal)
+### Architecture
 
-## Building
+shitterm operates by opening a pseudo-terminal, forking your shell into it, and bidirectionally shuttling bytes between the PTY master and stdout via a `select(2)` loop. There is no VT100 parsing, no scrollback buffer, no configuration file, and no font selection. These are not bugs. These are the result of careful architectural decisions made at the highest levels of the Southbag engineering organization.
+
+### Kevin
+
+Kevin is a first-class security primitive embedded directly in the terminal process. Kevin operates as a background surveillance thread, periodically surfacing compliance notifications in the lower-right corner of the viewport. Kevin's notification cadence is randomized to prevent prediction and circumvention. Kevin cannot be disabled. Kevin is always watching.
+
+> _"Kevin."_ — Southbag Philosophy, §1
+
+---
+
+## Installation
+
+### Pre-built Binaries
+
+Download from [Releases](https://github.com/SouthbagHQ/terminal/releases).
 
 ```sh
+chmod +x shitterm-linux-x86_64
+./shitterm-linux-x86_64
+```
+
+### Build from Source
+
+**Dependencies:** a C99 compiler, POSIX system, `openpty(3)`.
+
+```sh
+git clone https://github.com/SouthbagHQ/terminal
+cd terminal
 make
-```
-
-### Dependencies
-
-- A C compiler
-- A POSIX-ish system (Linux, macOS, FreeBSD, OpenBSD, NetBSD)
-- `openpty(3)` / `-lutil`
-
-### Cross-compile
-
-```sh
-make CC=aarch64-linux-gnu-gcc LDFLAGS=-lutil
-```
-
-## Usage
-
-```sh
 ./shitterm
 ```
 
-Your shell will start. Things may or may not work. Good luck.
+#### Cross-compile
 
-## Supported Platforms
+```sh
+# Linux aarch64
+make CC=aarch64-linux-gnu-gcc LDFLAGS="-lutil -lpthread"
 
-| OS | Arch |
-|----|------|
-| Linux | x86_64, aarch64, armv7 |
-| macOS | x86_64, arm64 |
-| FreeBSD | x86_64 |
-| OpenBSD | x86_64 |
-| NetBSD | x86_64 |
-| Windows | lol no |
+# macOS (clang)
+make CC=clang LDFLAGS=-lpthread
+```
 
-## Pre-built Binaries
+---
 
-Check the [Releases](https://github.com/SouthbagHQ/terminal/releases) page.
+## Platform Support
+
+| Platform | Architecture | Status |
+|----------|-------------|--------|
+| Linux | x86_64 | ✅ |
+| Linux | aarch64 | ✅ |
+| Linux | armv7 | ✅ |
+| macOS | x86_64 (Intel) | ✅ |
+| macOS | arm64 (Apple Silicon) | ✅ |
+| FreeBSD | x86_64 | ✅ |
+| OpenBSD | x86_64 | ✅ |
+| NetBSD | x86_64 | ✅ |
+| Windows | any | ❌ |
+
+---
+
+## Known Limitations
+
+- No scrollback
+- No tabs
+- No font configuration
+- No window resize guarantee
+- Kevin
+
+---
 
 ## License
 
-Public domain. No warranty. No refunds. No apologies.
+Released into the public domain. No warranty is provided. Southbag is not liable for data loss, productivity loss, or unexpected Kevin encounters.
