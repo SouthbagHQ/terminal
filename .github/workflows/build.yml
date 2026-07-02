@@ -1,0 +1,224 @@
+name: Build shitterm for everything (except windows, lol)
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:     [ "v*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Linux (native x86_64 + cross-compile aarch64)
+  # ──────────────────────────────────────────────
+  linux:
+    name: Linux (${{ matrix.arch }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            cc: gcc
+            extra_packages: ""
+          - arch: aarch64
+            cc: aarch64-linux-gnu-gcc
+            extra_packages: gcc-aarch64-linux-gnu libc6-dev-arm64-cross
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install cross-compile toolchain
+        if: matrix.extra_packages != ''
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ${{ matrix.extra_packages }}
+
+      - name: Build
+        run: make CC=${{ matrix.cc }} LDFLAGS=-lutil
+
+      - name: Rename artifact
+        run: mv shitterm shitterm-linux-${{ matrix.arch }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shitterm-linux-${{ matrix.arch }}
+          path: shitterm-linux-${{ matrix.arch }}
+
+  # ──────────────────────────────────────────────
+  # Linux armv7 (raspberry pi etc.)
+  # ──────────────────────────────────────────────
+  linux-armv7:
+    name: Linux (armv7)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gcc-arm-linux-gnueabihf libc6-dev-armhf-cross
+      - name: Build
+        run: make CC=arm-linux-gnueabihf-gcc LDFLAGS=-lutil
+      - name: Rename artifact
+        run: mv shitterm shitterm-linux-armv7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shitterm-linux-armv7
+          path: shitterm-linux-armv7
+
+  # ──────────────────────────────────────────────
+  # macOS (x86_64 and arm64 / Apple Silicon)
+  # ──────────────────────────────────────────────
+  macos:
+    name: macOS (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: macos-13        # last Intel runner
+          - arch: arm64
+            runner: macos-latest    # Apple Silicon
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: make CC=clang
+
+      - name: Rename artifact
+        run: mv shitterm shitterm-macos-${{ matrix.arch }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shitterm-macos-${{ matrix.arch }}
+          path: shitterm-macos-${{ matrix.arch }}
+
+  # ──────────────────────────────────────────────
+  # FreeBSD (via cross-compilation in a VM action)
+  # ──────────────────────────────────────────────
+  freebsd:
+    name: FreeBSD (x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build in FreeBSD VM
+        uses: cross-platform-actions/action@v0.25.0
+        with:
+          operating_system: freebsd
+          version: "14.1"
+          shell: sh
+          run: |
+            make CC=cc LDFLAGS=-lutil
+            mv shitterm shitterm-freebsd-x86_64
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shitterm-freebsd-x86_64
+          path: shitterm-freebsd-x86_64
+
+  # ──────────────────────────────────────────────
+  # OpenBSD
+  # ──────────────────────────────────────────────
+  openbsd:
+    name: OpenBSD (x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build in OpenBSD VM
+        uses: cross-platform-actions/action@v0.25.0
+        with:
+          operating_system: openbsd
+          version: "7.5"
+          shell: sh
+          run: |
+            make CC=cc LDFLAGS=-lutil
+            mv shitterm shitterm-openbsd-x86_64
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shitterm-openbsd-x86_64
+          path: shitterm-openbsd-x86_64
+
+  # ──────────────────────────────────────────────
+  # NetBSD
+  # ──────────────────────────────────────────────
+  netbsd:
+    name: NetBSD (x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build in NetBSD VM
+        uses: cross-platform-actions/action@v0.25.0
+        with:
+          operating_system: netbsd
+          version: "10.0"
+          shell: sh
+          run: |
+            make CC=cc LDFLAGS=-lutil
+            mv shitterm shitterm-netbsd-x86_64
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shitterm-netbsd-x86_64
+          path: shitterm-netbsd-x86_64
+
+  # ──────────────────────────────────────────────
+  # Release: bundle all artifacts when a tag is pushed
+  # ──────────────────────────────────────────────
+  release:
+    name: Publish Release
+    if: startsWith(github.ref, 'refs/tags/')
+    needs:
+      - linux
+      - linux-armv7
+      - macos
+      - freebsd
+      - openbsd
+      - netbsd
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          merge-multiple: true
+
+      - name: List artifacts
+        run: ls -lh artifacts/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ github.ref_name }}: still shit"
+          body: |
+            ## shitterm ${{ github.ref_name }}
+
+            The world's shittiest terminal emulator, now for even more platforms.
+
+            ### Supported Platforms
+            | Platform | Arch | File |
+            |----------|------|------|
+            | Linux | x86_64 | `shitterm-linux-x86_64` |
+            | Linux | aarch64 | `shitterm-linux-aarch64` |
+            | Linux | armv7 | `shitterm-linux-armv7` |
+            | macOS | x86_64 (Intel) | `shitterm-macos-x86_64` |
+            | macOS | arm64 (Apple Silicon) | `shitterm-macos-arm64` |
+            | FreeBSD | x86_64 | `shitterm-freebsd-x86_64` |
+            | OpenBSD | x86_64 | `shitterm-openbsd-x86_64` |
+            | NetBSD | x86_64 | `shitterm-netbsd-x86_64` |
+
+            Windows? lol no.
+
+            ### Installation
+            ```sh
+            chmod +x shitterm-*
+            ./shitterm-linux-x86_64
+            ```
+
+            > **Note:** If it doesn't work, that's a feature.
+          files: artifacts/*
+          fail_on_unmatched_files: true
