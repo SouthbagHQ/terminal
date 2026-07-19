@@ -3,6 +3,7 @@
 > The official terminal emulator of the [Southbag Global Enterprise Network](https://southbag.cc).
 
 [![Build](https://github.com/SouthbagHQ/terminal/actions/workflows/build.yml/badge.svg)](https://github.com/SouthbagHQ/terminal/actions/workflows/build.yml)
+[![Release](https://github.com/SouthbagHQ/terminal/actions/workflows/release.yml/badge.svg)](https://github.com/SouthbagHQ/terminal/actions/workflows/release.yml)
 
 ---
 

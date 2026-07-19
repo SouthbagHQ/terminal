@@ -1,0 +1,79 @@
+name: Release Southbag Terminal
+
+on:
+  push:
+    tags: [ "v*" ]
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Package
+        run: bun run dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: southbag-terminal-${{ matrix.os }}
+          path: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.dmg
+            dist/*.zip
+
+  release:
+    name: Publish Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          merge-multiple: true
+
+      - name: List artifacts
+        run: ls -lh artifacts/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ github.ref_name }}: still watching"
+          body: |
+            ## Southbag Terminal ${{ github.ref_name }}
+
+            Enterprise-grade. Kevin-compliant. Now with real VT100 parsing.
+
+            ### Supported Platforms
+            | Platform | File |
+            |----------|------|
+            | Linux (AppImage) | `Southbag Terminal-*.AppImage` |
+            | Linux (deb) | `southbag-terminal_*_amd64.deb` |
+            | macOS (dmg) | `Southbag Terminal-*.dmg` |
+            | macOS (zip) | `Southbag Terminal-*-mac.zip` |
+
+            Windows? lol no.
+
+            ### Installation
+            ```sh
+            chmod +x Southbag*.AppImage
+            ./Southbag*.AppImage
+            ```
+
+            > Kevin has reviewed this release and has no comment.
+          files: artifacts/*
+          fail_on_unmatched_files: true
