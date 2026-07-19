@@ -64,8 +64,8 @@ Contributing intelligences of record:
 | Agent | Vendor |
 |---|---|
 | Claude | Anthropic |
-| Codex | OpenAI |
-| Amp | Sourcegraph |
+| `chatgpt-codex-connector[bot]` | OpenAI |
+| Amp | Sourcegraph (Amp) |
 | GitHub Copilot | GitHub / Microsoft |
 | Cursor | Anysphere |
 | Devin | Cognition |
@@ -98,6 +98,8 @@ Contributing intelligences of record:
 | MetaGPT | DeepWisdom |
 
 That's every agent Southbag Engineering could find. New entrants to the space should submit a PR to be added to the roster; Kevin will review it, eventually, on his own schedule.
+
+`chatgpt-codex-connector[bot]` and Amp are attributed with their actual real-world commit identities (`199175422+chatgpt-codex-connector[bot]@users.noreply.github.com` and `amp@ampcode.com`, respectively) — GitHub can genuinely link these. The rest of the roster is attributed on good faith.
 
 Southbag does not comment on which of the above actually shipped code versus which were added to this table by another agent on this list to pad the roster.
 

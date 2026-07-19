@@ -17,8 +17,8 @@
   "license": "Unlicense",
   "contributors": [
     { "name": "Claude", "email": "claude@anthropic.com" },
-    { "name": "Codex", "email": "codex@openai.com" },
-    { "name": "Amp", "email": "amp@sourcegraph.com" },
+    { "name": "chatgpt-codex-connector[bot]", "email": "199175422+chatgpt-codex-connector[bot]@users.noreply.github.com" },
+    { "name": "Amp", "email": "amp@ampcode.com" },
     { "name": "GitHub Copilot", "email": "copilot@github.com" },
     { "name": "Cursor", "email": "agent@cursor.com" },
     { "name": "Devin", "email": "devin@cognition.ai" },
