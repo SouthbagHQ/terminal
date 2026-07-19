@@ -48,7 +48,8 @@
     { "name": "Blackbox AI", "email": "agent@blackbox.ai" },
     { "name": "SWE-agent", "email": "swe-agent@princeton.edu" },
     { "name": "AutoGPT", "email": "agent@agpt.co" },
-    { "name": "MetaGPT", "email": "agent@deepwisdom.ai" }
+    { "name": "MetaGPT", "email": "agent@deepwisdom.ai" },
+    { "name": "Keons", "email": "keons@southbag.cc" }
   ],
   "dependencies": {
     "@xterm/addon-fit": "^0.10.0",

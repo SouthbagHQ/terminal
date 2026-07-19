@@ -96,6 +96,7 @@ Contributing intelligences of record:
 | SWE-agent | Princeton NLP |
 | AutoGPT | Significant Gravitas |
 | MetaGPT | DeepWisdom |
+| Keons | Southbag (internal) |
 
 That's every agent Southbag Engineering could find. New entrants to the space should submit a PR to be added to the roster; Kevin will review it, eventually, on his own schedule.
 
