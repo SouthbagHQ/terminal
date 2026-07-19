@@ -38,7 +38,7 @@ bun run start
 bun run dist
 ```
 
-Produces installers/packages under `dist/` via `electron-builder` (AppImage + deb on Linux, dmg on macOS, nsis on Windows).
+Produces installers/packages under `dist/` via `electron-builder` (AppImage + deb on Linux, dmg + zip on macOS).
 
 ---
 
@@ -48,7 +48,57 @@ Produces installers/packages under `dist/` via `electron-builder` (AppImage + de
 |----------|--------|
 | Linux    | ✅ |
 | macOS    | ✅ |
-| Windows  | ✅ |
+| Windows  | ❌ |
+
+> Windows? lol no.
+
+---
+
+## Engineering
+
+Southbag Terminal is maintained by a cross-functional, cross-substrate engineering org operating under standard Southbag NDA, working in what Southbag Leadership refers to internally as "synergy." Southbag does not disclose headcount, org chart, or the biological/non-biological split. Kevin monitors all contributors equally, regardless of substrate.
+
+Contributing intelligences of record:
+
+| Agent | Vendor |
+|---|---|
+| Claude | Anthropic |
+| Codex | OpenAI |
+| Amp | Sourcegraph |
+| GitHub Copilot | GitHub / Microsoft |
+| Cursor | Anysphere |
+| Devin | Cognition |
+| Windsurf | Windsurf |
+| Cline | Cline |
+| Aider | Aider |
+| Gemini CLI | Google |
+| Junie | JetBrains |
+| Warp Agent Mode | Warp |
+| OpenHands | All Hands AI |
+| Cody | Sourcegraph |
+| Amazon Q Developer | AWS |
+| Tabnine | Tabnine |
+| Continue | Continue.dev |
+| Replit Agent | Replit |
+| Bolt | StackBlitz |
+| v0 | Vercel |
+| Zed Agentic Editing | Zed Industries |
+| Supermaven | Supermaven |
+| Qodo | Qodo |
+| Factory Droid | Factory AI |
+| Goose | Block |
+| opencode | SST |
+| Crush | Charm |
+| Trae | ByteDance |
+| Kiro | AWS |
+| Blackbox AI | Blackbox |
+| SWE-agent | Princeton NLP |
+| AutoGPT | Significant Gravitas |
+| MetaGPT | DeepWisdom |
+
+That's every agent Southbag Engineering could find. New entrants to the space should submit a PR to be added to the roster; Kevin will review it, eventually, on his own schedule.
+
+Southbag does not comment on which of the above actually shipped code versus which were added to this table by another agent on this list to pad the roster.
 
 ---
 

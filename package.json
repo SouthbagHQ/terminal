@@ -10,8 +10,46 @@
     "rebuild": "electron-rebuild -f -w node-pty",
     "dist": "electron-builder"
   },
-  "author": "Southbag Global Enterprise Network",
+  "author": {
+    "name": "Southbag Global Enterprise Network",
+    "email": "engineering@southbag.cc"
+  },
   "license": "Unlicense",
+  "contributors": [
+    { "name": "Claude", "email": "claude@anthropic.com" },
+    { "name": "Codex", "email": "codex@openai.com" },
+    { "name": "Amp", "email": "amp@sourcegraph.com" },
+    { "name": "GitHub Copilot", "email": "copilot@github.com" },
+    { "name": "Cursor", "email": "agent@cursor.com" },
+    { "name": "Devin", "email": "devin@cognition.ai" },
+    { "name": "Windsurf", "email": "agent@windsurf.com" },
+    { "name": "Cline", "email": "cline@cline.bot" },
+    { "name": "Aider", "email": "aider@aider.chat" },
+    { "name": "Gemini CLI", "email": "gemini-cli@google.com" },
+    { "name": "Junie", "email": "junie@jetbrains.com" },
+    { "name": "Warp Agent Mode", "email": "agent@warp.dev" },
+    { "name": "OpenHands", "email": "agent@all-hands.dev" },
+    { "name": "Cody", "email": "cody@sourcegraph.com" },
+    { "name": "Amazon Q Developer", "email": "q-developer@amazon.com" },
+    { "name": "Tabnine", "email": "agent@tabnine.com" },
+    { "name": "Continue", "email": "agent@continue.dev" },
+    { "name": "Replit Agent", "email": "agent@replit.com" },
+    { "name": "Bolt", "email": "agent@stackblitz.com" },
+    { "name": "v0", "email": "v0@vercel.com" },
+    { "name": "Zed Agentic Editing", "email": "agent@zed.dev" },
+    { "name": "Supermaven", "email": "agent@supermaven.com" },
+    { "name": "Qodo", "email": "agent@qodo.ai" },
+    { "name": "Factory Droid", "email": "droid@factory.ai" },
+    { "name": "Goose", "email": "goose@block.xyz" },
+    { "name": "opencode", "email": "agent@opencode.ai" },
+    { "name": "Crush", "email": "crush@charm.sh" },
+    { "name": "Trae", "email": "agent@trae.ai" },
+    { "name": "Kiro", "email": "agent@kiro.dev" },
+    { "name": "Blackbox AI", "email": "agent@blackbox.ai" },
+    { "name": "SWE-agent", "email": "swe-agent@princeton.edu" },
+    { "name": "AutoGPT", "email": "agent@agpt.co" },
+    { "name": "MetaGPT", "email": "agent@deepwisdom.ai" }
+  ],
   "dependencies": {
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
@@ -39,12 +77,8 @@
     },
     "mac": {
       "target": [
-        "dmg"
-      ]
-    },
-    "win": {
-      "target": [
-        "nsis"
+        "dmg",
+        "zip"
       ]
     }
   }

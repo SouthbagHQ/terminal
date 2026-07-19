@@ -1,4 +1,4 @@
-name: Build Southbag Terminal
+name: Build Southbag Terminal (except windows, lol)
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
             dist/*.AppImage
             dist/*.deb
             dist/*.dmg
-            dist/*.exe
+            dist/*.zip
 
   release:
     name: Publish Release
