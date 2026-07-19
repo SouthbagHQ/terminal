@@ -1,6 +1,6 @@
-# shitterm
+# Southbag Terminal
 
-> A paradigm-shifting, enterprise-grade terminal emulator from the [Southbag Global Enterprise Network](https://southbag.cc).
+> The official terminal emulator of the [Southbag Global Enterprise Network](https://southbag.cc).
 
 [![Build](https://github.com/SouthbagHQ/terminal/actions/workflows/build.yml/badge.svg)](https://github.com/SouthbagHQ/terminal/actions/workflows/build.yml)
 
@@ -8,80 +8,50 @@
 
 ## Overview
 
-**shitterm** is Southbag's official terminal emulator. It is fast, minimal, and compliant with Southbag's core security philosophy. All sessions are monitored by Kevin.
-
-### Architecture
-
-shitterm operates by opening a pseudo-terminal, forking your shell into it, and bidirectionally shuttling bytes between the PTY master and stdout via a `select(2)` loop. There is no VT100 parsing, no scrollback buffer, no configuration file, and no font selection. These are not bugs. These are the result of careful architectural decisions made at the highest levels of the Southbag engineering organization.
+Southbag Terminal is a cross-platform terminal emulator built on Electron and xterm.js. It wraps a real PTY (via `node-pty`), so scrollback, resizing, and full VT100/256-color support work the way you'd expect from a modern terminal.
 
 ### Kevin
 
-Kevin is a first-class security primitive embedded directly in the terminal process. Kevin operates as a background surveillance thread, periodically surfacing compliance notifications in the lower-right corner of the viewport. Kevin's notification cadence is randomized to prevent prediction and circumvention. Kevin cannot be disabled. Kevin is always watching.
-
-> _"Kevin."_ — Southbag Philosophy, §1
+Kevin is a compliance-monitoring feature embedded directly in the application. Kevin periodically surfaces status notifications in the lower-right corner of the window, on a randomized cadence. Kevin cannot be disabled.
 
 ---
 
 ## Installation
 
-### Pre-built Binaries
+Download a build for your platform from [Releases](https://github.com/SouthbagHQ/terminal/releases).
 
-Download from [Releases](https://github.com/SouthbagHQ/terminal/releases).
+## Development
 
-```sh
-chmod +x shitterm-linux-x86_64
-./shitterm-linux-x86_64
-```
-
-### Build from Source
-
-**Dependencies:** a C99 compiler, POSIX system, `openpty(3)`.
+**Requirements:** [Bun](https://bun.sh), a C/C++ toolchain (for building `node-pty`'s native module).
 
 ```sh
 git clone https://github.com/SouthbagHQ/terminal
 cd terminal
-make
-./shitterm
+bun install
+bun run rebuild   # rebuild node-pty against Electron's Node ABI
+bun run start
 ```
 
-#### Cross-compile
+## Building
 
 ```sh
-# Linux aarch64
-make CC=aarch64-linux-gnu-gcc LDFLAGS="-lutil -lpthread"
-
-# macOS (clang)
-make CC=clang LDFLAGS=-lpthread
+bun run dist
 ```
+
+Produces installers/packages under `dist/` via `electron-builder` (AppImage + deb on Linux, dmg on macOS, nsis on Windows).
 
 ---
 
 ## Platform Support
 
-| Platform | Architecture | Status |
-|----------|-------------|--------|
-| Linux | x86_64 | ✅ |
-| Linux | aarch64 | ✅ |
-| Linux | armv7 | ✅ |
-| macOS | x86_64 (Intel) | ✅ |
-| macOS | arm64 (Apple Silicon) | ✅ |
-| FreeBSD | x86_64 | ✅ |
-| OpenBSD | x86_64 | ✅ |
-| NetBSD | x86_64 | ✅ |
-| Windows | any | ❌ |
-
----
-
-## Known Limitations
-
-- No scrollback
-- No tabs
-- No font configuration
-- No window resize guarantee
-- Kevin
+| Platform | Status |
+|----------|--------|
+| Linux    | ✅ |
+| macOS    | ✅ |
+| Windows  | ✅ |
 
 ---
 
 ## License
 
-Released into the public domain. No warranty is provided. Southbag is not liable for data loss, productivity loss, or unexpected Kevin encounters.
+Released into the public domain (Unlicense). No warranty is provided.

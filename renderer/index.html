@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- do not loosen this CSP to make your life easier. "script-src 'self'"
+       is the only thing standing between a bad escape sequence and
+       somebody's home directory. ask me how i know. -m -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self';" />
+  <title>Southbag Terminal</title>
+  <!-- xterm's stylesheet first so styles.css can override cursor/selection
+       colors below it in cascade order. swapping this order breaks the
+       cursor color and i will not be debugging that again at midnight -->
+  <link rel="stylesheet" href="../node_modules/@xterm/xterm/css/xterm.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<!-- user-select: none lives in styles.css on body, so don't be alarmed
+     that none of this text is selectable. that's on purpose, it's a
+     terminal chrome, not a document. someone filed a bug about this once -->
+<body>
+  <!-- frame: false in main.js means literally everything below the
+       meta tags is our problem now, including things like "dragging
+       the window" and "not having a close button". be careful in here -->
+  <div id="titlebar">
+    <div id="titlebar-brand">
+      <!-- brand-mark is just a glowing div, not a real logo. someone
+           was supposed to make an actual logo. that was 3 sprints ago -->
+      <span id="brand-mark"></span>
+      <span id="brand-name">Southbag Terminal</span>
+    </div>
+
+    <!-- these pills are decorative and always say the same thing.
+         "Security: Compliant" is not wired to anything real, same as
+         it wasn't in the C version's banner. some traditions stay -->
+    <div id="titlebar-status">
+      <span class="status-pill">
+        <span class="dot dot-green"></span>Security: Compliant
+      </span>
+      <span class="status-pill">
+        <span class="dot dot-amber"></span>Kevin: Active
+      </span>
+    </div>
+
+    <!-- no native window controls anymore (frame: false), so these
+         three buttons ARE minimize/maximize/close now. renderer.js
+         wires them to the ipc bridge, don't add onclick= here -->
+    <div id="titlebar-controls">
+      <button id="btn-min" class="win-btn" title="Minimize">&#x2013;</button>
+      <button id="btn-max" class="win-btn" title="Maximize">&#x25A1;</button>
+      <button id="btn-close" class="win-btn win-btn-close" title="Close">&#x2715;</button>
+    </div>
+  </div>
+
+  <!-- xterm.js mounts itself into this div in renderer.js via term.open().
+       it's empty here on purpose, don't put a loading spinner in it,
+       xterm inits fast enough that it just looks broken for a frame -->
+  <div id="terminal-container"></div>
+
+  <!-- starts empty + invisible (see .kevin-toast in styles.css), gets
+       filled in and shown by renderer.js whenever kevin:notify fires.
+       aria-live so screen readers announce it — kevin is accessible -->
+  <div id="kevin-toast" class="kevin-toast" aria-live="polite"></div>
+
+  <!-- load order matters: Terminal and FitAddon globals have to exist
+       before renderer.js runs, since renderer.js isn't a module and
+       just assumes they're already on window. don't defer/async these -->
+  <script src="../node_modules/@xterm/xterm/lib/xterm.js"></script>
+  <script src="../node_modules/@xterm/addon-fit/lib/addon-fit.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

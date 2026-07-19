@@ -1,0 +1,191 @@
+:root {
+  --bg: #0b0d12;
+  --titlebar-bg: #11141a;
+  --border: #232830;
+  --text: #e6e8eb;
+  --text-dim: #7d8590;
+  --accent: #4c8bf5;
+  --green: #3fb950;
+  --amber: #d29922;
+  /* do not change these hex values without asking design first. i tried
+     "just nudging" the accent blue once and got 6 slack messages before
+     i'd even finished the commit. not worth it. not doing that again */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "Segoe UI", "Inter", sans-serif;
+  /* overflow: hidden because this is a terminal chrome, not a webpage —
+     if body ever scrolls something upstream is broken. don't "fix" this
+     by removing it, fix whatever made body taller than 100% instead */
+  overflow: hidden;
+  /* this is why you can't select the titlebar text. intentional.
+     xterm.js has its own selection handling inside #terminal-container
+     that isn't affected by this, so terminal text selection still works */
+  user-select: none;
+}
+
+#titlebar {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--titlebar-bg);
+  border-bottom: 1px solid var(--border);
+  /* -webkit-app-region: drag makes the whole bar draggable by default.
+     #titlebar-controls below overrides this back to no-drag, otherwise
+     you can't click the close button, you just drag the window forever.
+     ask me how long that took to notice in testing */
+  -webkit-app-region: drag;
+  padding: 0 10px 0 14px;
+}
+
+#titlebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+#brand-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+#titlebar-status {
+  display: flex;
+  gap: 10px;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-dim);
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.dot-green {
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+}
+
+.dot-amber {
+  background: var(--amber);
+  box-shadow: 0 0 6px var(--amber);
+}
+
+#titlebar-controls {
+  display: flex;
+  gap: 2px;
+  /* see the novel above about #titlebar's drag region. this line is
+     load-bearing, do not delete it while refactoring */
+  -webkit-app-region: no-drag;
+}
+
+.win-btn {
+  width: 30px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 1;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.win-btn:hover {
+  background: #1c2028;
+  color: var(--text);
+}
+
+.win-btn-close:hover {
+  background: #c93838;
+  color: #fff;
+}
+
+/* top: 40px has to match #titlebar's height exactly or you get either
+   a gap of bg color above the terminal or the titlebar clipping the
+   first row of text. these two numbers are coupled, i know that's bad,
+   i didn't have time to make it a shared CSS var, sorry to whoever
+   changes the titlebar height next */
+#terminal-container {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px 14px;
+}
+
+/* xterm.js sizes its internal canvas off this container's height, so
+   this rule has to be 100% or fitAddon.fit() computes the wrong row
+   count and the bottom of the terminal gets cut off */
+#terminal-container .xterm {
+  height: 100%;
+}
+
+/* starts invisible + slightly offset, .visible (toggled from renderer.js)
+   animates it in. pointer-events: none on the base class is deliberate —
+   kevin should never be clickable, draggable, or dismissable by the user.
+   this is not a bug. someone WILL file this as a bug. it is not a bug */
+.kevin-toast {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  background: #151922;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.kevin-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.kevin-toast .kevin-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 6px var(--amber);
+  flex-shrink: 0;
+}
+
+.kevin-toast .kevin-label {
+  font-weight: 700;
+  color: var(--text);
+}
