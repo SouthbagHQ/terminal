@@ -19,7 +19,7 @@
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps",
     "check": "node scripts/check.js",
-    "test": "node --test test/",
+    "test": "node --test test/*.test.js",
     "dist": "electron-builder --publish never"
   },
   "build": {
