@@ -281,6 +281,7 @@ function registerIpc() {
   });
   ipcMain.handle('auth:cancel', () => auth.cancelLogin());
   ipcMain.handle('auth:logout', async (event) => {
+    if (authStatus !== 'signed-in') return false;
     const win = BrowserWindow.fromWebContents(event.sender);
     const { response } = await dialog.showMessageBox(win, {
       type: 'warning',

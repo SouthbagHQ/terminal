@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Southbag Terminal</title>
+  <link rel="stylesheet" href="../../node_modules/@xterm/xterm/css/xterm.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="loading">
+  <!-- Login: the only way in. -->
+  <section id="login" class="view" hidden>
+    <header class="site-header">
+      <img class="site-logo" src="logo.png" alt="Southbag logo">
+      <h2>Southbag Terminal</h2>
+    </header>
+    <main class="login-main">
+      <h1>Welcome to Southbag Terminal</h1>
+      <p>You must log in with your Southbag account before you can use a terminal.</p>
+
+      <div class="announcement-grid">
+        <h2>Important announcements</h2>
+        <div class="announcement-card">
+          <h3>Mandatory login</h3>
+          <p>Shells are a privilege, not a right. Southbag Identity is required.</p>
+        </div>
+        <div class="announcement-card">
+          <h3>Monitoring</h3>
+          <p>Your usage is observed by Palantir for quality and compliance purposes.</p>
+        </div>
+        <div class="announcement-card">
+          <h3>Windows</h3>
+          <p>Windows is not supported. Please visit a branch.</p>
+        </div>
+      </div>
+
+      <form id="loginForm">
+        <p id="loginStatus" class="login-status" role="status"></p>
+        <button type="submit" id="loginButton" class="btn-large" data-track="login">Log in with Southbag Identity</button>
+        <button type="button" id="cancelButton" class="btn-small" data-track="login_cancel" hidden>cancel</button>
+        <button type="button" class="btn-small" data-track="confused" data-href="https://support.southbag.cc/ai">Confused?</button>
+      </form>
+
+      <div id="offlinePanel" class="recovery-panel" hidden>
+        <h3>We couldn't reach Southbag Identity</h3>
+        <p>Your account can't be verified, so no terminal for you. Check your connection and try again.</p>
+        <button type="button" id="retryButton" class="btn-large" data-track="offline_retry">Try again</button>
+      </div>
+
+      <button type="button" class="btn-large" data-track="find_branch" data-href="https://branch-locator.southbag.cc">Give up and find a branch</button>
+    </main>
+    <footer class="site-footer">
+      <p><button type="button" class="btn-small" data-track="security_bounty" data-href="https://support.southbag.cc/ai">Security Bounty</button></p>
+      <p><button type="button" class="btn-large" data-track="chat_with_human" data-href="https://support.southbag.cc/ai">Chat with a Human</button></p>
+    </footer>
+  </section>
+
+  <!-- Terminal: tabs and shells. -->
+  <section id="app" class="view" hidden>
+    <header class="app-header">
+      <img class="app-logo" src="logo.png" alt="Southbag">
+      <nav id="tabs" class="tabs" role="tablist" aria-label="Terminal tabs"></nav>
+      <button type="button" id="newTab" class="btn-new-tab" title="New tab" data-track="new_tab_button">+</button>
+      <div class="account">
+        <span id="accountName" class="account-name"></span>
+        <button type="button" id="logoutButton" class="btn-small" data-track="logout">log out</button>
+      </div>
+    </header>
+    <main id="terminals" class="terminals"></main>
+    <footer class="status-bar">
+      <span id="statusShell"></span>
+      <span id="statusSize"></span>
+      <span class="status-balance">Balance? Yes</span>
+      <span class="status-watch">Palantir is watching</span>
+      <button type="button" id="darkModeToggle" class="btn-small" data-track="dark_mode_toggle">Dark Mode</button>
+    </footer>
+  </section>
+
+  <script src="../../node_modules/@xterm/xterm/lib/xterm.js"></script>
+  <script src="../../node_modules/@xterm/addon-fit/lib/addon-fit.js"></script>
+  <script src="../../node_modules/@xterm/addon-web-links/lib/addon-web-links.js"></script>
+  <script src="../../node_modules/@xterm/addon-unicode11/lib/addon-unicode11.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
