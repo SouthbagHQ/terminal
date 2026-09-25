@@ -1,79 +1,100 @@
-name: Release Southbag Terminal
+name: Release
 
 on:
   push:
-    tags: [ "v*" ]
+    tags: ["v*"]
+
+permissions:
+  contents: write
 
 jobs:
   build:
-    name: ${{ matrix.os }}
+    # Every system Southbag supports: Linux (x64, arm64) and macOS (Intel, Apple silicon).
+    # Windows is deliberately not built.
+    name: Build (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-
+        include:
+          - name: linux-x64
+            os: ubuntu-latest
+            args: --linux --x64
+          - name: linux-arm64
+            os: ubuntu-24.04-arm
+            args: --linux --arm64
+          - name: macos
+            os: macos-latest
+            args: --mac --x64 --arm64
     steps:
       - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: 22
+          cache: npm
 
-      - name: Install dependencies
-        run: bun install
+      - name: Install rpm tooling
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y rpm
+
+      - run: npm ci
+
+      - name: Stamp version from tag
+        shell: bash
+        run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
+
+      - run: npm test
 
       - name: Package
-        run: bun run dist
+        run: npx electron-builder ${{ matrix.args }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: southbag-terminal-${{ matrix.os }}
+          name: southbag-terminal-${{ matrix.name }}
+          if-no-files-found: error
           path: |
             dist/*.AppImage
             dist/*.deb
+            dist/*.rpm
+            dist/*.tar.gz
             dist/*.dmg
             dist/*.zip
 
   release:
-    name: Publish Release
+    name: Publish GitHub Release
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/download-artifact@v4
         with:
-          path: artifacts/
+          path: artifacts
           merge-multiple: true
 
-      - name: List artifacts
-        run: ls -lh artifacts/
+      - name: Checksums
+        working-directory: artifacts
+        run: sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v2
         with:
-          name: "${{ github.ref_name }}: still watching"
+          name: Southbag Terminal ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          fail_on_unmatched_files: true
+          files: artifacts/*
           body: |
             ## Southbag Terminal ${{ github.ref_name }}
 
-            Enterprise-grade. Kevin-compliant. Now with real VT100 parsing.
+            A Southbag account is required. Log in with Southbag Identity on first launch.
 
-            ### Supported Platforms
-            | Platform | File |
-            |----------|------|
-            | Linux (AppImage) | `Southbag Terminal-*.AppImage` |
-            | Linux (deb) | `southbag-terminal_*_amd64.deb` |
-            | macOS (dmg) | `Southbag Terminal-*.dmg` |
-            | macOS (zip) | `Southbag Terminal-*-mac.zip` |
+            | Platform | Download |
+            |---|---|
+            | macOS (Apple silicon) | `southbag-terminal-*-mac-arm64.dmg` |
+            | macOS (Intel) | `southbag-terminal-*-mac-x64.dmg` |
+            | Linux x64 | `.AppImage`, `.deb`, `.rpm`, `.tar.gz` (`*-linux-x86_64*` / `*-linux-amd64*` / `*-linux-x64*`) |
+            | Linux arm64 | `.AppImage`, `.deb`, `.rpm`, `.tar.gz` (`*-linux-arm64*` / `*-linux-aarch64*`) |
+            | Windows | Not supported. Please visit a branch. |
 
-            Windows? lol no.
-
-            ### Installation
-            ```sh
-            chmod +x Southbag*.AppImage
-            ./Southbag*.AppImage
-            ```
-
-            > Kevin has reviewed this release and has no comment.
-          files: artifacts/*
-          fail_on_unmatched_files: true
+            macOS builds are unsigned: right-click → Open on first launch, or run `xattr -cr "/Applications/Southbag Terminal.app"`.
