@@ -1,0 +1,100 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    # Every system Southbag supports: Linux (x64, arm64) and macOS (Intel, Apple silicon).
+    # Windows is deliberately not built.
+    name: Build (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x64
+            os: ubuntu-latest
+            args: --linux --x64
+          - name: linux-arm64
+            os: ubuntu-24.04-arm
+            args: --linux --arm64
+          - name: macos
+            os: macos-latest
+            args: --mac --x64 --arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install rpm tooling
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y rpm
+
+      - run: npm ci
+
+      - name: Stamp version from tag
+        shell: bash
+        run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
+
+      - run: npm test
+
+      - name: Package
+        run: npx electron-builder ${{ matrix.args }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: southbag-terminal-${{ matrix.name }}
+          if-no-files-found: error
+          path: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.rpm
+            dist/*.tar.gz
+            dist/*.dmg
+            dist/*.zip
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Checksums
+        working-directory: artifacts
+        run: sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Southbag Terminal ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          fail_on_unmatched_files: true
+          files: artifacts/*
+          body: |
+            ## Southbag Terminal ${{ github.ref_name }}
+
+            A Southbag account is required. Log in with Southbag Identity on first launch.
+
+            | Platform | Download |
+            |---|---|
+            | macOS (Apple silicon) | `southbag-terminal-*-mac-arm64.dmg` |
+            | macOS (Intel) | `southbag-terminal-*-mac-x64.dmg` |
+            | Linux x64 | `.AppImage`, `.deb`, `.rpm`, `.tar.gz` (`*-linux-x86_64*` / `*-linux-amd64*` / `*-linux-x64*`) |
+            | Linux arm64 | `.AppImage`, `.deb`, `.rpm`, `.tar.gz` (`*-linux-arm64*` / `*-linux-aarch64*`) |
+            | Windows | Not supported. Please visit a branch. |
+
+            macOS builds are unsigned: right-click → Open on first launch, or run `xattr -cr "/Applications/Southbag Terminal.app"`.

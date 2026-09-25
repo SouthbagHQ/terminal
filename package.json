@@ -4,6 +4,7 @@
   "version": "2.0.0",
   "description": "The official terminal emulator of the Southbag Global Enterprise Network.",
   "main": "src/main/main.js",
+  "desktopName": "southbag-terminal.desktop",
   "private": true,
   "homepage": "https://southbag.cc",
   "repository": {
