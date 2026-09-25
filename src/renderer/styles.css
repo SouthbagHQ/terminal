@@ -60,10 +60,6 @@ button {
   transition: all 0.15s ease-in-out;
 }
 
-button:hover {
-  transform: skew(5deg) scale(1.05);
-}
-
 .btn-small {
   font-size: 9px;
   padding: 2px 8px;
@@ -170,7 +166,6 @@ body.mac .site-header {
 #loginButton:disabled {
   opacity: 0.6;
   cursor: progress;
-  animation: jitter 0.4s infinite;
 }
 
 .recovery-panel {
@@ -185,14 +180,6 @@ body.mac .site-header {
   margin-top: 40px;
   padding-top: 10px;
   border-top: 1px solid #cfd8dc;
-}
-
-@keyframes jitter {
-  0% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(2px, -2px) scale(1.05); }
-  50% { transform: translate(-2px, 2px) scale(0.95); }
-  75% { transform: translate(1px, 1px) scale(1.02); }
-  100% { transform: translate(0, 0) scale(1); }
 }
 
 /* ---------- Terminal app ---------- */
