@@ -359,11 +359,8 @@ body.mac .app-header {
   user-select: none;
 }
 
-.status-balance {
-  margin-left: auto;
-}
-
 .status-watch {
+  margin-left: auto;
   color: var(--southbag-danger);
 }
 
